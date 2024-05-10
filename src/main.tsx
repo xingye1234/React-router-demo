@@ -4,10 +4,16 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import App from "./App.tsx";
 import Layout from "./Layout.tsx";
 import Index from "./router/index";
-import Root, {loader as rootLoader, action as rootAction} from "./router/Root.tsx";
-import Contact, {loader as contactLoader} from "./router/Contact.tsx";
-import EditContact, {action as contactAction} from "./router/Edit";
-import  {action as deleteAction} from "./router/Destroy.tsx";
+import Root, {
+  loader as rootLoader,
+  action as rootAction,
+} from "./router/Root.tsx";
+import Contact, {
+  loader as contactLoader,
+  action as contactAction,
+} from "./router/Contact.tsx";
+import EditContact, { action as editAction } from "./router/Edit";
+import { action as deleteAction } from "./router/Destroy.tsx";
 import "./index.css";
 
 const About = React.lazy(() => import("./pages/About.tsx"));
@@ -21,24 +27,31 @@ const router = createBrowserRouter([
     loader: rootLoader,
     action: rootAction,
     children: [
+      //子路由捕获子路由not found
       {
-        index: true,
-        element: <Index />,
-      },
-      {
-        path: "/contacts/:contactId",
-        element: <Contact />,
-        loader: contactLoader,
-      },
-      {
-        path: "contacts/:contactId/edit",
-        element: <EditContact />,
-        loader: contactLoader,
-        action: contactAction,
-      },
-      {
-        path: "contacts/:contactId/destroy",
-        action: deleteAction,
+        errorElement: <ErrorPages />,
+        children: [
+          {
+            index: true,
+            element: <Index />,
+          },
+          {
+            path: "/contacts/:contactId",
+            element: <Contact />,
+            loader: contactLoader,
+            action: contactAction,
+          },
+          {
+            path: "contacts/:contactId/edit",
+            element: <EditContact />,
+            loader: contactLoader,
+            action: editAction,
+          },
+          {
+            path: "contacts/:contactId/destroy",
+            action: deleteAction,
+          },
+        ],
       },
     ],
   },
@@ -58,6 +71,6 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   // <React.StrictMode>
-    <RouterProvider router={router} />
+  <RouterProvider router={router} />
   // </React.StrictMode>
 );
